@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="studio-page">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff8f4">
 <meta name="description" content="Experimente cores e formatos de unhas, descubra seu estilo e monte seu próximo momento de cuidado com Thayna Alles.">
@@ -17,6 +17,97 @@
 @media(min-width:48rem){.studio-main{padding-top:3.5rem}.studio-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.preview-column{position:sticky;top:calc(var(--header-height) + 6rem)}.glass{padding:1.4rem}.preview{padding:1rem}.studio-tabs button{font-size:.83rem}.swatches{grid-template-columns:repeat(8,minmax(0,1fr))}.skin-swatches{grid-template-columns:repeat(6,minmax(0,1fr))}.quote-summary{position:static}}
 @media(max-width:350px){.studio-main{width:calc(100% - 1.3rem)}.glass{padding:.8rem}.studio .brand-name{font-size:1.45rem}.studio .header-inner .text-link{font-size:.73rem}.chip{padding:.45rem .65rem}.swatches{gap:.2rem}}
 @media(prefers-reduced-motion:reduce){.studio *, .studio *::before,.studio *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.designer-column { min-width: 0; }
+.saved-looks { margin-block-start: 1rem; }
+.live-preview-dock, .preview-edit-link { display: none; }
+.live-preview-dialog {
+  width: min(100% - 1.5rem, 27rem);
+  max-height: calc(100% - 1.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding: .85rem;
+  border: 1px solid #fff;
+  border-radius: 1.35rem;
+  background: #fff8f4;
+  color: var(--ink);
+  box-shadow: 0 20px 75px #36142252;
+  overscroll-behavior: contain;
+}
+.live-preview-dialog[open] { animation: studio-in .23s var(--ease) both; }
+.live-preview-dialog::backdrop {
+  background: #3216228a;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+.studio-page { scrollbar-gutter: stable; }
+.studio-page:has(.live-preview-dialog[open]) { overflow: hidden; }
+.live-preview-dialog-heading { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .65rem; }
+.live-preview-dialog-heading h2 { font-size: 2.5rem; margin-inline-start: .25rem; }
+.live-preview-stage { width: min(100%, max(10rem, calc(100svh - 9rem))); margin-inline: auto; }
+.live-preview-look { margin-top: .65rem; text-align: center; color: var(--wine); font-size: .875rem; font-weight: 700; }
+
+@media (max-width: 47.999rem) {
+  .studio-page {
+    --studio-tabs-top: calc(.35rem + env(safe-area-inset-top));
+    --studio-preview-top: calc(5.45rem + env(safe-area-inset-top));
+    scroll-padding-block-start: var(--studio-preview-top);
+  }
+  .studio .header { position: relative; }
+  .studio-tabs { top: var(--studio-tabs-top); }
+  .preview-heading small { display: none; }
+  .preview-edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    min-height: 2.75rem;
+    padding-inline: .65rem;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: #fffaf8;
+    color: var(--wine);
+    font-size: .875rem;
+    font-weight: 700;
+  }
+  .live-preview-dock {
+    position: sticky;
+    top: var(--studio-preview-top);
+    z-index: 5;
+    display: block;
+    margin-block-end: .7rem;
+  }
+  .live-preview {
+    display: grid;
+    grid-template-columns: clamp(6.65rem, 35vw, 9rem) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(.6rem, 3vw, .95rem);
+    width: 100%;
+    padding: .42rem .7rem .42rem .42rem;
+    border: 1px solid #8b515442;
+    border-radius: 1.1rem;
+    background: #fff8f4f7;
+    box-shadow: 0 6px 22px #632b3d29, inset 0 1px #fff;
+    color: var(--wine);
+    text-align: left;
+    transition: box-shadow .22s, transform .25s var(--ease);
+    -webkit-backdrop-filter: blur(13px);
+    backdrop-filter: blur(13px);
+  }
+  .compact-hand {
+    display: block;
+    width: 100%;
+    aspect-ratio: 284 / 219;
+    overflow: hidden;
+    border-radius: .75rem;
+    background: #f3e0e1;
+    stroke: none;
+    pointer-events: none;
+  }
+  .live-preview-copy { display: grid; gap: .12rem; line-height: 1.3; }
+  .live-preview-label { font-size: .875rem; font-weight: 700; }
+  .live-preview-copy strong { font: clamp(1.2rem, 5.4vw, 1.6rem)/1.05 var(--serif); }
+  .live-preview-zoom { display: flex; align-items: center; gap: .3rem; margin-top: .14rem; color: var(--muted); font-size: .875rem; }
+  .live-preview-zoom svg { width: .95rem; height: .95rem; }
+  .editor-controls :is(button, input) { scroll-margin-block-start: 8.2rem; }
+}
 </style>
 </head>
 <body class="studio">
@@ -30,16 +121,27 @@
 <div class="studio-grid">
 <div class="preview-column">
 <div class="glass preview">
-<div class="preview-heading"><p class="kicker">Seu design ao vivo</p><small>Toque em uma unha para editar</small></div>
-<div class="hand-stage"><svg id="hand" viewBox="0 0 400 390" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Simulação ilustrativa de uma mão com cinco unhas personalizáveis"></svg></div>
+<div class="preview-heading" id="full-preview" tabindex="-1"><p class="kicker">Seu design ao vivo</p><small>Toque em uma unha para editar</small><a class="preview-edit-link" href="#nail-editor">Editar design</a></div>
+<div class="hand-stage"><svg id="hand" viewBox="0 0 400 390" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Simulação ilustrativa de uma mão com cinco unhas personalizáveis"><defs id="hand-defs"></defs><g id="hand-art"></g><g id="hand-targets"></g></svg></div>
 <div class="preview-caption"><strong id="look-label">Seu look</strong><span class="muted" id="target-label">Todas as unhas</span></div>
 <div class="preview-actions"><button class="button button-outline" id="save-look" type="button">♡ Salvar look</button><button class="button button-outline" id="export-look" type="button">↓ Salvar imagem</button></div>
 <button class="button full" id="send-look" type="button">Enviar inspiração à Thayna</button><p class="notice" id="notice" role="status" aria-live="polite"></p>
 <p class="muted" style="font-size:.73rem;text-align:center">Ilustração para inspiração. Cores, comprimento e acabamentos reais podem variar; confirme a disponibilidade no atendimento.</p>
 </div>
-<div class="glass" style="margin-top:1rem"><div class="control-title"><h3>Meus looks</h3><small>Salvos neste aparelho</small></div><div id="saved-list" class="saved-list"></div></div>
 </div>
-<div class="glass">
+<div class="designer-column">
+<div class="editor-region" id="nail-editor">
+  <div class="live-preview-dock">
+    <button class="live-preview" id="open-live-preview" type="button" aria-haspopup="dialog" aria-controls="live-preview-dialog" aria-label="Ampliar prévia do seu design">
+      <svg class="compact-hand" viewBox="44 0 284 219" aria-hidden="true" focusable="false"><use href="#hand-art"/></svg>
+      <span class="live-preview-copy">
+        <span class="live-preview-label">Prévia ao vivo</span>
+        <strong id="compact-target">Todas as unhas</strong>
+        <span class="live-preview-zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></svg>Ampliar</span>
+      </span>
+    </button>
+  </div>
+  <div class="glass editor-controls">
 <div class="control-block"><div class="control-title"><strong>01 · Tom de pele</strong><small>Escolha seu tom</small></div><div class="swatches skin-swatches" id="skins"></div></div>
 <div class="control-block"><div class="control-title"><strong>02 · Personalizar</strong><small>Uma ou todas</small></div><div class="choices" id="targets"></div></div>
 <div class="control-block"><div class="control-title"><strong>03 · Formato</strong></div><div class="choices" id="shapes"></div><div class="control-title" style="margin-top:.8rem"><strong>Comprimento</strong></div><div class="choices" id="lengths"></div></div>
@@ -47,7 +149,22 @@
 <div class="control-block"><div class="control-title"><strong>05 · Acabamento</strong></div><div class="choices" id="finishes"></div><div class="control-title" style="margin-top:.8rem"><strong>Arte</strong></div><div class="choices" id="arts"></div></div>
 <div class="control-block"><div class="control-title"><strong>06 · Inspirações rápidas</strong></div><div class="choices" id="presets"></div></div>
 <button class="button button-outline full" id="reset-look" type="button">Recomeçar design</button>
-</div></div></section>
+  </div>
+</div>
+<div class="glass saved-looks"><div class="control-title"><h3>Meus looks</h3><small>Salvos neste aparelho</small></div><div id="saved-list" class="saved-list"></div></div>
+</div>
+</div>
+<dialog class="live-preview-dialog" id="live-preview-dialog" aria-labelledby="live-preview-title">
+  <div class="live-preview-dialog-heading">
+    <h2 id="live-preview-title">Seu design</h2>
+    <form method="dialog"><button class="icon-button" type="submit" aria-label="Fechar prévia" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></form>
+  </div>
+  <div class="hand-stage live-preview-stage">
+    <svg viewBox="0 0 400 390" role="img" aria-label="Prévia ampliada da mão com o design atual"><use href="#hand-art"/></svg>
+  </div>
+  <p class="live-preview-look" id="expanded-look"></p>
+</dialog>
+</section>
 <section class="studio-panel" id="quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden><div class="glass quiz-card"><div class="section-heading"><p class="kicker">Consultoria de estilo</p><h2>O que combina <em>com você?</em></h2><p class="muted">Responda a quatro perguntas e receba uma inspiração que poderá experimentar no simulador.</p></div><div id="quiz-question"></div><div id="quiz-result" hidden></div></div></section>
 <section class="studio-panel" id="quote" role="tabpanel" aria-labelledby="tab-quote" hidden><div class="glass quote-card"><div class="section-heading"><p class="kicker">Planeje seu atendimento</p><h2>Seu momento <em>de cuidado.</em></h2><p class="muted">Selecione os serviços que deseja e consulte a disponibilidade com a Thayna.</p></div><div id="service-options"></div><div class="quote-summary"><div class="quote-total"><div><p class="kicker">Valor estimado</p><p id="quote-count" class="muted" aria-live="polite">Nenhum serviço</p></div><output id="quote-total" aria-live="polite">R$ 0,00</output></div><label><input type="checkbox" id="include-look"> Incluir meu design de unhas na mensagem</label><button type="button" class="button full" id="send-quote" disabled>Consultar horários pelo WhatsApp</button><p class="muted" style="font-size:.72rem;margin-top:.55rem">Não é uma reserva. Valores, combinações e disponibilidade devem ser confirmados com a profissional.</p></div></div></section>
 </main><footer class="studio-footer">Beauty Studio · Thayna Alles · Poly Design<br><a href="./index.html">Site principal</a> · <a href="https://www.instagram.com/thayalles/" target="_blank" rel="noopener noreferrer">Instagram</a></footer>
@@ -73,8 +190,40 @@ function activeNails(){return selected===-1?design.nails:[design.nails[selected]
 function apply(prop,value){activeNails().forEach(n=>n[prop]=value);render()}
 function allSame(prop,value){return activeNails().every(n=>n[prop]===value)}
 function mix(hex,other,t){const a=hex.slice(1).match(/../g).map(v=>parseInt(v,16)),b=other.slice(1).match(/../g).map(v=>parseInt(v,16));return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')}
-function choices(id,items,active,callback){const root=$(id);root.replaceChildren();items.forEach((item,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=item;b.setAttribute('aria-pressed',String(active(item,i)));b.onclick=()=>{callback(item,i);const next=root.children[i];if(next)next.focus({preventScroll:true})};root.append(b)})}
-function swatches(id,items,active,callback){const root=$(id);root.replaceChildren();items.forEach((item,i)=>{const b=document.createElement('button');b.type='button';b.className='swatch';b.title=item[0];b.setAttribute('aria-label',item[0]);b.setAttribute('aria-pressed',String(active(item,i)));const s=document.createElement('span');s.style.setProperty('--c',item[1]);b.append(s);b.onclick=()=>{callback(item,i);root.children[i]?.focus({preventScroll:true})};root.append(b)})}
+function updateButtons(id, items, isActive, select, decorate) {
+  const root = $(id);
+  if (!root.childElementCount) {
+    const buttons = items.map((item, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      decorate(button, item);
+      button.addEventListener('click', () => select(item, index));
+      return button;
+    });
+    root.append(...buttons);
+  }
+  items.forEach((item, index) => {
+    const button = root.children[index];
+    const pressed = String(isActive(item, index));
+    if (button.getAttribute('aria-pressed') !== pressed) button.setAttribute('aria-pressed', pressed);
+  });
+}
+function choices(id, items, isActive, select) {
+  updateButtons(id, items, isActive, select, (button, label) => {
+    button.className = 'chip';
+    button.textContent = label;
+  });
+}
+function swatches(id, items, isActive, select) {
+  updateButtons(id, items, isActive, select, (button, [label, color]) => {
+    button.className = 'swatch';
+    button.title = label;
+    button.setAttribute('aria-label', label);
+    const sample = document.createElement('span');
+    sample.style.setProperty('--c', color);
+    button.append(sample);
+  });
+}
 const geometry=[{x:92,y:190,r:-43,w:23},{x:143,y:83,r:-10,w:22},{x:194,y:58,r:0,w:24},{x:245,y:77,r:8,w:22},{x:289,y:129,r:15,w:18}];
 function nailPath(w,h,shape){const a=w/2,t=-h;
 if(shape==='Quadrada')return 'M'+(-a)+' -5 Q'+(-a)+' 1 0 2 Q'+a+' 1 '+a+' -5 L'+a+' '+(t+3)+' Q'+a+' '+t+' '+(a-3)+' '+t+' H'+(-a+3)+' Q'+(-a)+' '+t+' '+(-a)+' '+(t+3)+' Z';
@@ -86,17 +235,67 @@ function handSVG(exporting=false){const tone=skins[design.skin][1],light=mix(ton
 let defs='<linearGradient id="skin" x1="0" x2="1" y1="0" y2=".4"><stop stop-color="'+shade+'"/><stop offset=".36" stop-color="'+light+'"/><stop offset="1" stop-color="'+tone+'"/></linearGradient><linearGradient id="bg" x2=".85" y2="1"><stop stop-color="#f9ede6"/><stop offset="1" stop-color="#e8cbd1"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="4" dy="9" stdDeviation="7" flood-color="#663647" flood-opacity=".17"/></filter>';
 let content='<rect width="400" height="390" rx="20" fill="url(#bg)"/><circle cx="325" cy="85" r="95" fill="#fff" opacity=".15"/><circle cx="60" cy="325" r="108" fill="#fff" opacity=".12"/><path d="M138 390 L138 322 C114 307 100 284 87 256 L63 210 C51 187 59 166 75 160 C89 155 101 166 111 183 L123 207 L119 85 C118 66 129 54 143 55 C157 55 165 67 166 84 L174 179 L171 59 C171 42 180 29 194 29 C208 29 218 42 218 59 L220 177 L224 78 C225 60 235 48 249 50 C263 52 269 65 268 83 L263 186 L275 127 C278 111 288 101 301 105 C315 109 320 122 316 138 L299 231 C295 266 283 299 263 320 L262 390 Z" fill="url(#skin)" stroke="'+dark+'" stroke-width="1.1" filter="url(#shadow)"/>';
 content+='<g fill="none" stroke="'+dark+'" stroke-width="1.2" opacity=".34" stroke-linecap="round"><path d="M128 128 Q143 132 157 127 M129 135 Q144 139 157 134 M181 113 Q195 117 209 113 M181 120 Q195 124 209 120 M235 133 Q248 138 260 134 M235 140 Q248 144 259 141 M279 180 Q290 186 301 183 M278 187 Q289 193 300 190 M82 218 Q96 210 104 201 M85 224 Q98 216 107 207 M126 218 Q144 242 144 272 M151 313 Q195 326 246 313"/></g>';
+const targets = [];
 geometry.forEach((g,i)=>{const n=design.nails[i],h={Curta:25,Média:35,Longa:47}[n.length]*(i===4?.85:1),w=g.w,p=nailPath(w,h,n.shape),hi=mix(n.color,'#ffffff',n.finish==='Fosco'?.07:.36),lo=mix(n.color,'#2e1720',.20);
 defs+='<clipPath id="clip'+i+'"><path d="'+p+'"/></clipPath><linearGradient id="polish'+i+'" x1="0" x2="1" y1="0" y2=".6"><stop stop-color="'+lo+'"/><stop offset=".25" stop-color="'+n.color+'"/><stop offset=".48" stop-color="'+hi+'"/><stop offset=".75" stop-color="'+n.color+'"/><stop offset="1" stop-color="'+lo+'"/></linearGradient><linearGradient id="fade'+i+'" x1="0" x2="0" y1="1" y2="0"><stop stop-color="#fff5ed" stop-opacity="0"/><stop offset="1" stop-color="#fff5ed" stop-opacity=".9"/></linearGradient>';
 let deco='';if(n.art==='Francesinha'||n.art==='Microfrancesinha'){const th=n.art==='Francesinha'?8:3;deco+='<path d="M-30 '+(-h-2)+' H30 V'+(-h+th)+' Q0 '+(-h+th+7)+' -30 '+(-h+th)+'Z" fill="#fff9f5" opacity=".97"/>'}if(n.art==='Degradê')deco+='<rect x="-20" y="'+(-h)+'" width="40" height="'+h+'" fill="url(#fade'+i+')"/>';if(n.art==='Coração')deco+='<path d="M0 -11 C-13 -19 -4 -25 0 -20 C4 -25 13 -19 0 -11Z" fill="#fff5ef" opacity=".95"/>';
 if(n.finish==='Glitter'){for(let j=0;j<28;j++){const x=((j*13+5)%25)-12,y=-((j*17+3)%Math.round(h));deco+='<circle cx="'+x+'" cy="'+y+'" r="'+(j%4===0?1.1:.55)+'" fill="'+(j%3===0?'#fff8ef':'#f6d2a0')+'" opacity="'+(j%3===0?.88:.56)+'"/>'}}
 if(n.finish==='Perolado')deco+='<path d="M-8 '+(-h)+' Q1 '+(-h*.5)+' 6 2" fill="none" stroke="#fff5ed" stroke-width="7" opacity=".24"/>';
 if(n.finish!=='Fosco')deco+='<path d="M'+(-w*.25)+' '+(-h+9)+' Q'+(-w*.33)+' '+(-h*.5)+' '+(-w*.26)+' -9" stroke="#fff" stroke-width="1.7" stroke-linecap="round" opacity=".42" fill="none"/>';
-const attrs=exporting?'':' class="nail-hit" data-finger="'+i+'" tabindex="0" role="button" aria-label="Editar '+fingers[i]+'"';
-content+='<g transform="translate('+g.x+' '+g.y+') rotate('+g.r+')"'+attrs+'><path d="'+p+'" fill="'+(n.finish==='Fosco'?n.color:'url(#polish'+i+')')+'" stroke="'+mix(n.color,'#321f24',.23)+'" stroke-width=".8"/><g clip-path="url(#clip'+i+')">'+deco+'</g>'+(!exporting&&selected===i?'<path d="'+p+'" fill="none" stroke="#fff" stroke-width="2.2" stroke-dasharray="3 2"/>':'')+'<path class="nail-select" fill="none" stroke="none" d="'+p+'"/></g>';
+const position = 'translate('+g.x+' '+g.y+') rotate('+g.r+')';
+const selection = !exporting && selected === i ? '<path d="'+p+'" fill="none" stroke="#fff" stroke-width="2.2" stroke-dasharray="3 2"/>' : '';
+content += '<g transform="'+position+'"><path d="'+p+'" fill="'+(n.finish==='Fosco'?n.color:'url(#polish'+i+')')+'" stroke="'+mix(n.color,'#321f24',.23)+'" stroke-width=".8"/><g clip-path="url(#clip'+i+')">'+deco+'</g>'+selection+'</g>';
+if (!exporting) {
+  targets.push('<g class="nail-hit" transform="'+position+'" data-finger="'+i+'" tabindex="0" role="button" aria-pressed="'+(selected===i)+'" aria-label="Editar '+fingers[i]+'"><rect x="'+(-w/2-8)+'" y="'+(-h-7)+'" width="'+(w+16)+'" height="'+(h+15)+'" rx="6" fill="transparent"/><path class="nail-select" d="'+p+'"/></g>');
+}
 });
-return '<defs>'+defs+'</defs>'+content+(exporting?'<text x="200" y="365" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#fff8f4" stroke="none">Beauty Studio · Thayna Alles</text>':'')}
-function draw(){const hand=$('hand');hand.innerHTML=handSVG();hand.querySelectorAll('[data-finger]').forEach(el=>{const action=()=>{selected=Number(el.dataset.finger);render();$('hand').querySelector('[data-finger="'+selected+'"]')?.focus({preventScroll:true})};el.addEventListener('click',action);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();action()}})});const same=design.nails.every(n=>JSON.stringify(n)===JSON.stringify(design.nails[0]));$('look-label').textContent=same?colorName(design.nails[0].color)+' · '+design.nails[0].shape:'Design personalizado';$('target-label').textContent=selected===-1?'Todas as unhas':fingers[selected]}
+if (!exporting) return { defs, content, targets: targets.join('') };
+return '<defs>'+defs+'</defs>'+content+'<text x="200" y="365" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#fff8f4" stroke="none">Beauty Studio · Thayna Alles</text>';
+}
+
+const hand = $('hand');
+const livePreviewDialog = $('live-preview-dialog');
+let editorScrollTop = null;
+function selectFromHand(event) {
+  const hit = event.target.closest('[data-finger]');
+  if (!hit) return;
+  if (event.type === 'keydown') {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+  }
+  selected = Number(hit.dataset.finger);
+  render();
+  hand.querySelector('[data-finger="'+selected+'"]')?.focus({preventScroll:true});
+}
+hand.addEventListener('click', selectFromHand);
+hand.addEventListener('keydown', selectFromHand);
+$('open-live-preview').addEventListener('click', () => {
+  if (typeof livePreviewDialog.showModal === 'function') {
+    editorScrollTop = window.scrollY;
+    livePreviewDialog.showModal();
+  } else {
+    $('full-preview').scrollIntoView({block:'start'});
+    $('full-preview').focus({preventScroll:true});
+  }
+});
+livePreviewDialog.addEventListener('close', () => {
+  if (editorScrollTop === null) return;
+  window.scrollTo({top: editorScrollTop, behavior: 'instant'});
+  editorScrollTop = null;
+});
+function draw() {
+  const { defs, content, targets } = handSVG();
+  $('hand-defs').innerHTML = defs;
+  $('hand-art').innerHTML = content;
+  $('hand-targets').innerHTML = targets;
+  const same = design.nails.every(n => JSON.stringify(n) === JSON.stringify(design.nails[0]));
+  const look = same ? colorName(design.nails[0].color)+' · '+design.nails[0].shape : 'Design personalizado';
+  const target = selected === -1 ? 'Todas as unhas' : fingers[selected];
+  $('look-label').textContent = look;
+  $('expanded-look').textContent = look;
+  $('target-label').textContent = target;
+  $('compact-target').textContent = target;
+}
 function render(){draw();swatches('skins',skins,(_,i)=>design.skin===i,(_,i)=>{design.skin=i;render()});choices('targets',['Todas',...fingers],(_,i)=>selected===i-1,(_,i)=>{selected=i-1;render()});choices('shapes',shapes,v=>allSame('shape',v),v=>apply('shape',v));choices('lengths',lengths,v=>allSame('length',v),v=>apply('length',v));swatches('colors',colors,c=>allSame('color',c[1]),c=>apply('color',c[1]));$('color-name').textContent=allSame('color',activeNails()[0].color)?colorName(activeNails()[0].color):'Cores variadas';$('custom-color').value=activeNails()[0].color;choices('finishes',finishes,v=>allSame('finish',v),v=>apply('finish',v));choices('arts',arts,v=>allSame('art',v),v=>apply('art',v));choices('presets',presets.map(p=>p[0]),(_,i)=>{const p=presets[i];return design.nails.every(n=>n.color===p[1]&&n.shape===p[2]&&n.length===p[3]&&n.finish===p[4]&&n.art===p[5])},(_,i)=>preset(presets[i]));persist()}
 function preset(p){design.nails=Array.from({length:5},()=>({color:p[1],shape:p[2],length:p[3],finish:p[4],art:p[5]}));selected=-1;render()}
 $('custom-color').addEventListener('input',e=>apply('color',e.target.value));$('reset-look').onclick=()=>{design=initial();selected=-1;render();announce('Design reiniciado.')};
@@ -118,7 +317,7 @@ function renderQuote(){services.forEach((_,i)=>{$('service-'+i).checked=chosen.h
 services.forEach((s,i)=>{if(i===0||i===7){const h=document.createElement('h3');h.className='service-category';h.textContent=i===0?'Unhas':'Spa dos pés';$('service-options').append(h)}const label=document.createElement('label');label.className='service-choice';const input=document.createElement('input');input.type='checkbox';input.id='service-'+i;input.onchange=()=>{if(input.checked){exclusive.forEach(pair=>{if(pair.includes(i))pair.forEach(j=>{if(j!==i)chosen.delete(j)})});chosen.add(i)}else chosen.delete(i);renderQuote()};const price=document.createElement('strong');price.textContent=currency(s[1]);label.append(input,document.createTextNode(s[0]),price);$('service-options').append(label)});
 $('send-quote').onclick=()=>{if(!chosen.size)return;const ordered=[...chosen].sort((a,b)=>a-b),total=ordered.reduce((sum,i)=>sum+services[i][1],0);whatsapp('Oi, Thayna! Montei meu momento de cuidado no Beauty Studio. Gostaria de consultar horários para:\n\n'+ordered.map(i=>'• '+services[i][0]+' — '+currency(services[i][1])).join('\n')+'\n\nTotal estimado: '+currency(total)+($('include-look').checked?'\n\nMinha inspiração de unhas:\n'+describe():'')+'\n\nVocê pode confirmar os valores e a disponibilidade?')};
 const tabs=[...document.querySelectorAll('[data-tab]')];
-function switchTab(id,scroll=false,hash=true){if(!tabs.some(t=>t.dataset.tab===id))id='nails';tabs.forEach(t=>{const on=t.dataset.tab===id;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;$(t.dataset.tab).hidden=!on});if(hash){try{history.replaceState(null,'','#'+id)}catch(e){}}if(scroll){window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});$('tab-'+id).focus({preventScroll:true})}}
+function switchTab(id,scroll=false,hash=true){if(!tabs.some(t=>t.dataset.tab===id))id='nails';if(id!=='nails'&&livePreviewDialog.open){editorScrollTop=null;livePreviewDialog.close()}tabs.forEach(t=>{const on=t.dataset.tab===id;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;$(t.dataset.tab).hidden=!on});if(hash){try{history.replaceState(null,'','#'+id)}catch(e){}}if(scroll){window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});$('tab-'+id).focus({preventScroll:true})}}
 tabs.forEach((t,i)=>{t.onclick=()=>switchTab(t.dataset.tab,true);t.onkeydown=e=>{let next;if(e.key==='ArrowRight')next=(i+1)%tabs.length;else if(e.key==='ArrowLeft')next=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=tabs.length-1;else return;e.preventDefault();switchTab(tabs[next].dataset.tab,true)}});
 window.addEventListener('hashchange',()=>switchTab(location.hash.slice(1),false,false));render();renderSaved();renderQuiz();renderQuote();switchTab(location.hash.slice(1)||'nails',false,false);
 </script></body></html>
